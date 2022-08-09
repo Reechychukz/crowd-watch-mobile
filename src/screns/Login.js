@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 
@@ -6,7 +6,7 @@ import { View } from "react-native";
 import { Formik } from 'formik';
 
 //icons
-import { Octicons } from '@expo/vector-icons';
+import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
 
 import {
     StyledContainer,
@@ -19,20 +19,29 @@ import {
     StyledInputLabel,
     StyledTextInput,
     RightIcon,
-    Colors
+    Colors,
+    StyledButton,
+    ButtonText,
+    MsgBox,
+    Line,
+    ExtraView,
+    ExtraText,
+    TextLink,
+    TextLinkContent
 } from "../components/style";
 
 //Colors
-const { brand, darkLight } = Colors;
+const { brand, darkLight, primary } = Colors;
 
 const Login = () => {
+    const [hidePassword, setHidePassword] = useState(true);
     return (
         <StyledContainer>
             <StatusBar style="dark" />
             <InnerContainer>
                 <PageLogo resizeMode="cover" source={require('../../assets/img/login.jpg')}></PageLogo>
                 <PageTitle>Crowd Watch</PageTitle>
-                <SubTitle>Login</SubTitle>
+                <SubTitle>User Account Login</SubTitle>
                 <Formik
                     initialValues={{ email: '', password: '' }}
                     onSubmit={(values) => {
@@ -60,8 +69,26 @@ const Login = () => {
                                 onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                                 value={values.password}
-                                secureTextEntry={true}
+                                secureTextEntry={hidePassword}
+                                isPassword={true}
+                                hidePassword={hidePassword}
+                                setHidePassword={setHidePassword}
                             />
+                            <MsgBox>...</MsgBox>
+                            <StyledButton onPress={handleSubmit}>
+                                <ButtonText>Login</ButtonText>
+                            </StyledButton>
+                            <Line />
+                            <StyledButton google={true} onPress={handleSubmit}>
+                                <Fontisto name="google" color={primary} size={25} />
+                                <ButtonText google={true}>Sign in with Google</ButtonText>
+                            </StyledButton>
+                            <ExtraView>
+                                <ExtraText>Don't have an account already? </ExtraText>
+                                <TextLink>
+                                    <TextLinkContent>Signup</TextLinkContent>
+                                </TextLink>
+                            </ExtraView>
                         </StyledFormArea>)}
                 </Formik>
             </InnerContainer>
@@ -69,7 +96,7 @@ const Login = () => {
     )
 }
 
-const MyTextInput = ({ label, icon, ...props }) => {
+const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
     return (
         <View>
             <LeftIcon>
@@ -77,6 +104,11 @@ const MyTextInput = ({ label, icon, ...props }) => {
             </LeftIcon>
             <StyledInputLabel>{label}</StyledInputLabel>
             <StyledTextInput {...props} />
+            {isPassword && (
+                <RightIcon onPress={() => setHidePassword(!hidePassword)}>
+                    <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} />
+                </RightIcon>
+            )}
         </View>
     )
 }
