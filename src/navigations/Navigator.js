@@ -1,7 +1,7 @@
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
-import Login from '../screns/Login';
-import Register from '../screns/SignUp';
+import Login from '../screens/Login';
+import Register from '../screens/SignUp';
 
 const stackNavigatorOptions = {
     headerShown: false
