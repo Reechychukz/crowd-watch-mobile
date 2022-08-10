@@ -8,6 +8,9 @@ import { Formik } from 'formik';
 //icons
 import { Octicons, Ionicons, Fontisto, AntDesign } from '@expo/vector-icons';
 
+//Keyboard Avoiding View
+import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
+
 import {
     StyledContainer,
     InnerContainer,
@@ -36,87 +39,88 @@ const { brand, darkLight, primary } = Colors;
 const Signup = () => {
     const [hidePassword, setHidePassword] = useState(true);
     return (
-        <StyledContainer>
-            <StatusBar style="dark" />
-            <InnerContainer>
-                {/* <PageLogo resizeMode="cover" source={require('../../assets/img/login.jpg')}></PageLogo> */}
-                <PageTitle>Crowd Watch</PageTitle>
-                <SubTitle>User Account Signup</SubTitle>
-                <Formik
-                    initialValues={{ email: '', userName: '', password: '', confirmPassword: '' }}
-                    onSubmit={(values) => {
-                        console.log(values);
-                    }}
-                >
-                    {({ handleChange, handleBlur, handleSubmit, values }) => (
-                        <StyledFormArea>
-                            <MyTextInput
-                                label="Email Address"
-                                icon="mail"
-                                placeholder="johndoe@mail.com"
-                                placeholderTextColor={darkLight}
-                                onChangeText={handleChange('email')}
-                                onBlur={handleBlur('email')}
-                                value={values.email}
-                                keyboardType="email-address"
-                            />
+        <KeyboardAvoidingWrapper>
+            <StyledContainer>
+                <StatusBar style="dark" />
+                <InnerContainer>
+                    <PageTitle>Crowd Watch</PageTitle>
+                    <SubTitle>User Account Signup</SubTitle>
+                    <Formik
+                        initialValues={{ email: '', userName: '', password: '', confirmPassword: '' }}
+                        onSubmit={(values) => {
+                            console.log(values);
+                        }}
+                    >
+                        {({ handleChange, handleBlur, handleSubmit, values }) => (
+                            <StyledFormArea>
+                                <MyTextInput
+                                    label="Email Address"
+                                    icon="mail"
+                                    placeholder="johndoe@mail.com"
+                                    placeholderTextColor={darkLight}
+                                    onChangeText={handleChange('email')}
+                                    onBlur={handleBlur('email')}
+                                    value={values.email}
+                                    keyboardType="email-address"
+                                />
 
-                            <MyTextInput
-                                label="Username"
-                                icon="person"
-                                placeholder="johndoe123"
-                                placeholderTextColor={darkLight}
-                                onChangeText={handleChange('userName')}
-                                onBlur={handleBlur('userName')}
-                                value={values.userName}
-                            />
+                                <MyTextInput
+                                    label="Username"
+                                    icon="person"
+                                    placeholder="johndoe123"
+                                    placeholderTextColor={darkLight}
+                                    onChangeText={handleChange('userName')}
+                                    onBlur={handleBlur('userName')}
+                                    value={values.userName}
+                                />
 
-                            <MyTextInput
-                                label="Password"
-                                icon="lock"
-                                placeholder="* * * * * * * *"
-                                placeholderTextColor={darkLight}
-                                onChangeText={handleChange('password')}
-                                onBlur={handleBlur('password')}
-                                value={values.password}
-                                secureTextEntry={hidePassword}
-                                isPassword={true}
-                                hidePassword={hidePassword}
-                                setHidePassword={setHidePassword}
-                            />
+                                <MyTextInput
+                                    label="Password"
+                                    icon="lock"
+                                    placeholder="* * * * * * * *"
+                                    placeholderTextColor={darkLight}
+                                    onChangeText={handleChange('password')}
+                                    onBlur={handleBlur('password')}
+                                    value={values.password}
+                                    secureTextEntry={hidePassword}
+                                    isPassword={true}
+                                    hidePassword={hidePassword}
+                                    setHidePassword={setHidePassword}
+                                />
 
-                            <MyTextInput
-                                label="Confirm Password"
-                                icon="lock"
-                                placeholder="* * * * * * * *"
-                                placeholderTextColor={darkLight}
-                                onChangeText={handleChange('confirmPassword')}
-                                onBlur={handleBlur('confirmPassword')}
-                                value={values.confirmPassword}
-                                secureTextEntry={hidePassword}
-                                isPassword={true}
-                                hidePassword={hidePassword}
-                                setHidePassword={setHidePassword}
-                            />
-                            <MsgBox>...</MsgBox>
-                            <StyledButton onPress={handleSubmit}>
-                                <ButtonText>Login</ButtonText>
-                            </StyledButton>
-                            <Line />
-                            <StyledButton google={true} onPress={handleSubmit}>
-                                <Fontisto name="google" color={primary} size={25} />
-                                <ButtonText google={true}>Sign in with Google</ButtonText>
-                            </StyledButton>
-                            <ExtraView>
-                                <ExtraText>Already have an account? </ExtraText>
-                                <TextLink>
-                                    <TextLinkContent>Login</TextLinkContent>
-                                </TextLink>
-                            </ExtraView>
-                        </StyledFormArea>)}
-                </Formik>
-            </InnerContainer>
-        </StyledContainer>
+                                <MyTextInput
+                                    label="Confirm Password"
+                                    icon="lock"
+                                    placeholder="* * * * * * * *"
+                                    placeholderTextColor={darkLight}
+                                    onChangeText={handleChange('confirmPassword')}
+                                    onBlur={handleBlur('confirmPassword')}
+                                    value={values.confirmPassword}
+                                    secureTextEntry={hidePassword}
+                                    isPassword={true}
+                                    hidePassword={hidePassword}
+                                    setHidePassword={setHidePassword}
+                                />
+                                <MsgBox>...</MsgBox>
+                                <StyledButton onPress={handleSubmit}>
+                                    <ButtonText>Register</ButtonText>
+                                </StyledButton>
+                                <Line />
+                                <StyledButton google={true} onPress={handleSubmit}>
+                                    <Fontisto name="google" color={primary} size={25} />
+                                    <ButtonText google={true}>Sign in with Google</ButtonText>
+                                </StyledButton>
+                                <ExtraView>
+                                    <ExtraText>Already have an account? </ExtraText>
+                                    <TextLink>
+                                        <TextLinkContent>Login</TextLinkContent>
+                                    </TextLink>
+                                </ExtraView>
+                            </StyledFormArea>)}
+                    </Formik>
+                </InnerContainer>
+            </StyledContainer>
+        </KeyboardAvoidingWrapper>
     )
 }
 
