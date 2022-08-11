@@ -1,6 +1,6 @@
 import React from 'react';
 
-import AppNavigator from './src/navigations/Navigator';
+//import AppNavigator from './src/navigators/RootStack';
 
 //screens
 import Login from './src/screens/Login';
