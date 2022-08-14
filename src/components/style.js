@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 
 const StatusBarHeight = Constants.statusBarHeight;
@@ -14,12 +14,12 @@ export const Colors = {
     red: "EF4444"
 };
 
-const {primary, secondary, tertiary, darkLight, brand, green, red} = Colors;
+const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors;
 
 export const StyledContainer = styled.View`
     flex: 1;
     padding: 25px;
-    padding-top: ${StatusBarHeight + 10}px; 
+    padding-top: ${StatusBarHeight + 30}px; 
     background-color: ${primary}
 `;
 
@@ -140,11 +140,13 @@ export const ButtonText = styled.Text`
 export const MsgBox = styled.Text`
     text-align: center;
     font-size: 13px;
+
+    color: ${(props) => props.type == 'SUCCESS' ? green : red}
 `;
 
 export const Line = styled.View`
     height: 1px;
-    width: 100%;
+    width: 100 %;
     background-color: ${darkLight};
     margin-vertical: 10px;
 `;
