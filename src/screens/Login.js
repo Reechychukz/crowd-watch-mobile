@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 
 //formik
 import { Formik } from 'formik';
@@ -36,8 +36,45 @@ const { brand, darkLight, primary } = Colors;
 //Keyboard avoiding view
 import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
 
-const Login = () => {
+//API Client
+import axios from "axios";
+
+const Login = ({ navigation }) => {
     const [hidePassword, setHidePassword] = useState(true);
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState();
+
+    const handleLogin = (credentials, setSubmitting) => {
+        handleMessage(null);
+
+        const url = 'https://28c9-197-210-76-157.eu.ngrok.io/api/v1/users/login';
+
+        axios
+            .post(url, credentials)
+            .then((res) => {
+                const result = res.data;
+
+                const { data, success, message, error } = result;
+
+                if (success != true) {
+                    handleMessage(message, success);
+                } else {
+                    navigation.navigate('Welcome', data);
+                }
+                setSubmitting(false);
+            })
+            .catch((error) => {
+                console.log(error);
+                setSubmitting(false);
+                handleMessage("An error occurred. Check your network and try again");
+            })
+    }
+
+    const handleMessage = (message, type = 'FAILED') => {
+        setMessage(message);
+        setMessageType(type);
+    }
+
     return (
         <KeyboardAvoidingWrapper>
             <StyledContainer>
@@ -48,11 +85,16 @@ const Login = () => {
                     <SubTitle>User Account Login</SubTitle>
                     <Formik
                         initialValues={{ email: '', password: '' }}
-                        onSubmit={(values) => {
-                            console.log(values);
+                        onSubmit={(values, { setSubmitting }) => {
+                            if (values.email == '' || values.password == '') {
+                                handleMessage('Please fill all fields');
+                                setSubmitting(false);
+                            } else {
+                                handleLogin(values, setSubmitting);
+                            }
                         }}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values }) => (
+                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
                             <StyledFormArea>
                                 <MyTextInput
                                     label="Email Address"
@@ -78,10 +120,18 @@ const Login = () => {
                                     hidePassword={hidePassword}
                                     setHidePassword={setHidePassword}
                                 />
-                                <MsgBox>...</MsgBox>
-                                <StyledButton onPress={handleSubmit}>
-                                    <ButtonText>Login</ButtonText>
-                                </StyledButton>
+                                <MsgBox type={messageType}>{message}</MsgBox>
+                                {!isSubmitting && (
+                                    <StyledButton onPress={handleSubmit}>
+                                        <ButtonText>Login</ButtonText>
+                                    </StyledButton>)}
+
+                                {isSubmitting && (
+                                    <StyledButton disabled={true}>
+                                        <ActivityIndicator size="large" color={primary} />
+                                    </StyledButton>
+                                )}
+
                                 <Line />
                                 <StyledButton google={true} onPress={handleSubmit}>
                                     <Fontisto name="google" color={primary} size={25} />
@@ -89,7 +139,7 @@ const Login = () => {
                                 </StyledButton>
                                 <ExtraView>
                                     <ExtraText>Don't have an account already? </ExtraText>
-                                    <TextLink>
+                                    <TextLink onPress={() => navigation.navigate('Signup')}>
                                         <TextLinkContent>Signup</TextLinkContent>
                                     </TextLink>
                                 </ExtraView>
