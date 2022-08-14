@@ -21,18 +21,19 @@ import {
 } from "../components/style";
 
 
-const Welcome = () => {
+const Welcome = ({ navigation, route }) => {
+    const {firstName, email} = route.params;
     return (
         <>
             <StatusBar style="light" />
             <InnerContainer>
-            <WelcomeImage resizeMode="cover" source={require('../../assets/img/login.jpg')}/>
+                <WelcomeImage resizeMode="cover" source={require('../../assets/img/login.jpg')} />
 
                 <WelcomeContainer>
 
                     <PageTitle Welcome={true}>Welcome! John</PageTitle>
-                    <SubTitle Welcome={true}>John Doe</SubTitle>
-                    <SubTitle Welcome={true}>johndoe@mail.com</SubTitle>
+                    <SubTitle Welcome={true}>{firstName || 'John Doe'}</SubTitle>
+                    <SubTitle Welcome={true}>{email || 'johndoe@mail.com'}</SubTitle>
 
                     <StyledFormArea>
                         <Avatar resizeMode="cover" source={require('../../assets/img/login.jpg')}></Avatar>
@@ -40,7 +41,7 @@ const Welcome = () => {
 
                         <Line />
 
-                        <StyledButton onPress={() => { }}>
+                        <StyledButton onPress={() => { navigation.navigate("Login") }}>
                             <ButtonText>Logout</ButtonText>
                         </StyledButton>
 
