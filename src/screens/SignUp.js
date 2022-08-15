@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 
 //formik
 import { Formik } from 'formik';
@@ -10,6 +10,9 @@ import { Octicons, Ionicons, Fontisto, AntDesign } from '@expo/vector-icons';
 
 //Keyboard Avoiding View
 import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
+
+//API Client
+import axios from "axios";
 
 import {
     StyledContainer,
@@ -36,8 +39,43 @@ import {
 //Colors
 const { brand, darkLight, primary } = Colors;
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
     const [hidePassword, setHidePassword] = useState(true);
+
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState();
+
+    const handleSignup = (credentials, setSubmitting) => {
+        handleMessage(null);
+
+        const url = 'https://dbe8-102-89-34-159.eu.ngrok.io/api/v1/users/register';
+
+        axios
+            .post(url, credentials)
+            .then((res) => {
+                const result = res.data;
+
+                const { data, success, message, ...error } = result;
+                console.log(data)
+
+                if (success != true) {
+                    handleMessage(error.response.data.message, success);
+                } else {
+                    navigation.navigate('Welcome', data);
+                }
+                setSubmitting(false);
+            })
+            .catch((error) => {
+                console.log(error.response);
+                setSubmitting(false);
+                handleMessage("An error occurred. Check your network and try again");
+            })
+    }
+
+    const handleMessage = (message, type = 'FAILED') => {
+        setMessage(message);
+        setMessageType(type);
+    }
     return (
         <KeyboardAvoidingWrapper>
             <StyledContainer>
@@ -47,11 +85,20 @@ const Signup = () => {
                     <SubTitle>User Account Signup</SubTitle>
                     <Formik
                         initialValues={{ email: '', userName: '', password: '', confirmPassword: '' }}
-                        onSubmit={(values) => {
-                            console.log(values);
+                        onSubmit={(values, { setSubmitting }) => {
+                            if (values.email == '' || values.userName == '' || values.password == '' || values.confirmPassword == '') {
+                                handleMessage('Please fill all fields');
+                                setSubmitting(false);
+                            } else if (values.password !== values.confirmPassword) {
+                                handleMessage('Passwords do not match');
+                                setSubmitting(false);
+                            }
+                            else {
+                                handleSignup(values, setSubmitting);
+                            }
                         }}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values }) => (
+                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
                             <StyledFormArea>
                                 <MyTextInput
                                     label="Email Address"
@@ -101,10 +148,19 @@ const Signup = () => {
                                     hidePassword={hidePassword}
                                     setHidePassword={setHidePassword}
                                 />
-                                <MsgBox>...</MsgBox>
-                                <StyledButton onPress={handleSubmit}>
-                                    <ButtonText>Register</ButtonText>
-                                </StyledButton>
+                                <MsgBox type={messageType}>{message}</MsgBox>
+
+                                {!isSubmitting && (
+                                    <StyledButton onPress={handleSubmit}>
+                                        <ButtonText>Signup</ButtonText>
+                                    </StyledButton>)}
+
+                                {isSubmitting && (
+                                    <StyledButton disabled={true}>
+                                        <ActivityIndicator size="large" color={primary} />
+                                    </StyledButton>
+                                )}
+
                                 <Line />
                                 <StyledButton google={true} onPress={handleSubmit}>
                                     <Fontisto name="google" color={primary} size={25} />

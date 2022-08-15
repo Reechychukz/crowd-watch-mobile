@@ -47,24 +47,25 @@ const Login = ({ navigation }) => {
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
 
-        const url = 'https://28c9-197-210-76-157.eu.ngrok.io/api/v1/users/login';
+        const url = 'https://dbe8-102-89-34-159.eu.ngrok.io/api/v1/users/login';
 
         axios
             .post(url, credentials)
             .then((res) => {
                 const result = res.data;
 
-                const { data, success, message, error } = result;
+                const { data, success, message, ...error } = result;
+                console.log(error)
 
                 if (success != true) {
-                    handleMessage(message, success);
+                    handleMessage(error.response.data.message, success);
                 } else {
                     navigation.navigate('Welcome', data);
                 }
                 setSubmitting(false);
             })
             .catch((error) => {
-                console.log(error);
+                console.log(error.response);
                 setSubmitting(false);
                 handleMessage("An error occurred. Check your network and try again");
             })
