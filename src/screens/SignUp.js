@@ -76,6 +76,10 @@ const Signup = ({ navigation }) => {
         setMessage(message);
         setMessageType(type);
     }
+
+    const handleGoogleSignin = () => {
+        
+    }
     return (
         <KeyboardAvoidingWrapper>
             <StyledContainer>
