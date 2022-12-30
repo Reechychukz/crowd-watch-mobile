@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import KeyboardAvoidingWrapper from '../components/KeyboardAvoidingWrapper';
 
@@ -22,6 +22,7 @@ import OctIcons from '@expo/vector-icons/Octicons';
 import IonIcons from '@expo/vector-icons/Ionicons';
 import CodeInputField from '../components/CodeInputField';
 import { ActivityIndicator } from 'react-native-paper';
+import ResendTimer from '../components/ResendTimer';
 
 const Verification = () => {
     const [code, setCode] = useState('');
@@ -30,7 +31,55 @@ const Verification = () => {
     //verification button
     const [verifying, setVerifying] = useState(false);
 
+
     const MAX_CODE_LENGTH = 4;
+
+    //modal
+    const [modalVisible, setModalVisible] = useState(false);
+    const [verificationSuccessful, setverificationSuccessful] = useState(false);
+    const [requestMessage, setRequestMessage] = useState('');
+
+    //resend timer
+    const [timeLeft, setTimeLeft] = useState(null);
+    const [targetTime, setTargetTime] = useState(null);
+    const [activeResend, setActiveResend] = useState(false);
+
+    const [resendingEmail, setResendingEmail] = useState(false);
+    const [resendStatus, setResendStatus] = useState('Resend');
+
+    let resendTimerInterval;
+
+    const triggerTimer = (targetTimeInSeconds = 30) => {
+        setTargetTime(targetTimeInSeconds);
+        setActiveResend(false);
+        const finalTIme = +new Date() + targetTimeInSeconds * 1000;
+
+        resendTimerInterval = setInterval(() => calculateTImeLeft(finalTIme), 1000)
+    }
+
+    const calculateTImeLeft = (finalTime) => {
+        const difference = finalTime - +new Date();
+
+        if (difference >= 0) {
+            setTimeLeft(Math.round(difference / 1000));
+        } else {
+            clearInterval(resendTimerInterval);
+            setActiveResend(true);
+            setTimeLeft(null);
+        }
+    }
+
+    useEffect(() => {
+        triggerTimer();
+
+        return () => {
+            clearInterval(resendTimerInterval);
+        }
+    }, []);
+
+    const resendEmail = async () => {
+
+    }
 
     const submitOtpVerification = () => {
 
@@ -103,6 +152,13 @@ const Verification = () => {
                         </StyledButton>
                     )}
 
+                    <ResendTimer
+                        activeResend={activeResend}
+                        resendingEmail={resendingEmail}
+                        resendStatus={resendStatus}
+                        timeLeft={timeLeft}
+                        targetTime={targetTime}
+                        resendEmail={resendEmail} />
                 </BottomHalf>
 
             </StyledContainer>

@@ -11,7 +11,9 @@ export const Colors = {
     darkLight: "#9CA3AF",
     brand: "#4c4ef8",
     green: "#10B981",
-    red: "EF4444"
+    red: "#EF4444",
+    gray: "#6B7280",
+    lightGreen: "rgba(16, 185, 129, 0.1)"
 };
 
 const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors;
@@ -173,6 +175,15 @@ export const TextLink = styled.TouchableOpacity`
 export const TextLinkContent = styled.Text`
     color: ${brand};
     font-size: 15px;
+
+    ${(props) => {
+        const { resendStatus } = props;
+        if (resendStatus === 'Failed!') {
+            return `color: ${Colors.red}`;
+        } else if (resendStatus === 'Sent!') {
+            return `color: ${Colors.green}`;
+        }
+    }}
 `;
 
 export const TopHalf = styled.View`
@@ -212,6 +223,13 @@ export const CodeInputSection = styled.View`
     margin-vertical: 30px;
 `;
 
+export const InlineGroup = styled.View`
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+`;
+
 export const HiddenTextInput = styled.TextInput`
     position: absolute;
     width: 1px;
@@ -219,7 +237,7 @@ export const HiddenTextInput = styled.TextInput`
 `;
 
 export const CodeInputsContainer = styled.Pressable`
-    width: 70%;
+    width: 80%;
     flex-direction: row;
     justify-content: space-between;
 `;
@@ -239,7 +257,7 @@ export const CodeInputText = styled.Text`
     color: ${Colors.brand};
 `;
 
-export const CodeInputFocused = styled(CodeINput)`
+export const CodeInputFocused = styled(CodeInput)`
     border-color: ${Colors.green}
 `
 
