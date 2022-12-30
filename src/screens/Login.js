@@ -47,14 +47,14 @@ const Login = ({ navigation }) => {
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
 
-        const url = 'https://dbe8-102-89-34-159.eu.ngrok.io/api/v1/users/login';
+        const url = 'https://localhost:7142/api/v1/users/login';
 
         axios
             .post(url, credentials)
             .then((res) => {
                 const result = res.data;
 
-                const { data, success, message, ...error } = result;
+                const { data, success, message } = result;
                 console.log(error)
 
                 if (success != true) {

@@ -48,15 +48,16 @@ const Signup = ({ navigation }) => {
     const handleSignup = (credentials, setSubmitting) => {
         handleMessage(null);
 
-        const url = 'https://dbe8-102-89-34-159.eu.ngrok.io/api/v1/users/register';
+        const url = 'https://localhost:7142/api/v1/users/register';
 
         axios
             .post(url, credentials)
             .then((res) => {
+                console.log(res)
                 const result = res.data;
 
                 const { data, success, message, ...error } = result;
-                console.log(data)
+                // console.log(data)
 
                 if (success != true) {
                     handleMessage(error.response.data.message, success);
@@ -66,7 +67,8 @@ const Signup = ({ navigation }) => {
                 setSubmitting(false);
             })
             .catch((error) => {
-                console.log(error.response);
+                console.log(error)
+                console.log(error.response.data.message);
                 setSubmitting(false);
                 handleMessage("An error occurred. Check your network and try again");
             })
@@ -78,7 +80,7 @@ const Signup = ({ navigation }) => {
     }
 
     const handleGoogleSignin = () => {
-        
+        const config = {iosClientId: `108594035886-t0hi24vjlb4a99go0e0qkcps0k785lc9.apps.googleusercontent.com`}
     }
     return (
         <KeyboardAvoidingWrapper>
