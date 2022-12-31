@@ -24,6 +24,9 @@ import CodeInputField from '../components/CodeInputField';
 import { ActivityIndicator } from 'react-native-paper';
 import ResendTimer from '../components/ResendTimer';
 
+//verification modal
+import VerificationModal from '../components/VerificationModal';
+
 const Verification = () => {
     const [code, setCode] = useState('');
     const [pinReady, setPinReady] = useState(false);
@@ -84,6 +87,11 @@ const Verification = () => {
     const submitOtpVerification = () => {
 
     }
+
+    //persisting login after verification
+    const persistLoginAfterOTPVerification = async () => {
+
+    };
 
     return (
         <KeyboardAvoidingWrapper>
@@ -160,6 +168,13 @@ const Verification = () => {
                         targetTime={targetTime}
                         resendEmail={resendEmail} />
                 </BottomHalf>
+
+                <VerificationModal
+                    successful={verificationSuccessful}
+                    setModalVisible={setModalVisible}
+                    modalVisible={modalVisible}
+                    requestMessage={requestMessage}
+                    persistLoginAfterOTPVerification={persistLoginAfterOTPVerification} />
 
             </StyledContainer>
         </KeyboardAvoidingWrapper>
