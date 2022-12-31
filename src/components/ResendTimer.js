@@ -17,7 +17,7 @@ const ResendTimer = ({ activeResend, resendEmail, resendingEmail,
     return (
         <View>
             <InlineGroup>
-                <InfoText>Didn't receive the email?</InfoText>
+                <InfoText>Didn't receive the email? </InfoText>
 
                 {!resendingEmail && (
                     <TextLink
