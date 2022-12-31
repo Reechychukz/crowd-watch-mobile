@@ -230,6 +230,27 @@ export const InlineGroup = styled.View`
     padding: 10px;
 `;
 
+export const ModalContainer = styled(StyledContainer)`
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7)
+`;
+
+export const ModalView = styled.View`
+    margin: 20px;
+    background-color: white;
+    border-radius: 20px;
+    align-items: center;
+    elevation: 5;
+    padding: 35px;
+    shadow-color: #000;
+    shadow-offset: 0px 2px;
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    width: 100%;
+    
+`;
+
 export const HiddenTextInput = styled.TextInput`
     position: absolute;
     width: 1px;
