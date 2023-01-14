@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
+import { View, Text, Image, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import Constants from 'expo-constants';
 
 const StatusBarHeight = Constants.statusBarHeight;
@@ -17,6 +17,10 @@ export const Colors = {
 };
 
 const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors;
+
+export const Container = styled.SafeAreaView`
+    flex: 1;
+`;
 
 export const StyledContainer = styled.View`
     flex: 1;
@@ -280,5 +284,17 @@ export const CodeInputText = styled.Text`
 
 export const CodeInputFocused = styled(CodeInput)`
     border-color: ${Colors.green}
-`
+`;
 
+export const TapBarView = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+`;
+
+export const UserInfoSection = styled.View`
+    margin: 15px;
+`;
+
+export const UserName = styled.View`
+    flex: 1;
+`;
