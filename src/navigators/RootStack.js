@@ -15,8 +15,9 @@ import Welcome from '../screens/Welcome';
 const Stack = createNativeStackNavigator();
 
 //Credentials context
+
 import { CredentialsContext } from '../components/CredentialsContext';
-import Tabs from './Tabs';
+import Tabs from './TabStack';
 
 const RootStack = () => {
     return (
