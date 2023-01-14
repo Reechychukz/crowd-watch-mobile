@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 
 import RootStack from './src/navigators/RootStack';
 
+import TabStack from './src/navigators/TabStack';
+
 import AppLoading from 'expo-app-loading';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CredentialsContext } from './src/components/CredentialsContext';
+import ProfileStack from './src/navigators/ProfileStack';
+import DrawerStack from './src/navigators/DrawerStack';
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
@@ -35,7 +39,10 @@ export default function App() {
   }
   return (
     <CredentialsContext.Provider value={{storedCredentials, setStoredCredentials}}>
-      <RootStack />
+      {/* <RootStack /> */}
+      {/* <TabStack /> */}
+      <DrawerStack />
+      {/* <ProfileStack /> */}
     </CredentialsContext.Provider>
   );
 }
