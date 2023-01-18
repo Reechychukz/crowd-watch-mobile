@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Home from '../screens/Home';
-import Post from '../screens/Post';
 import Emergency from '../screens/Emergency';
 import Friends from '../screens/Friends';
 import Profile from '../screens/Profile';
