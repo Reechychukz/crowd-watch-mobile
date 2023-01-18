@@ -9,6 +9,8 @@ import { Colors } from '../components/style';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FontAwesome } from '@expo/vector-icons';
+
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
@@ -39,31 +41,31 @@ const ProfileStack = ({ navigation }) => {
             <Stack.Screen
                 name='Profile'
                 component={Profile}
-                
+
 
                 options={{
                     headerLeft: () => (
                         <View style={{ paddingLeft: 15 }}>
-                            <Ionicons.Button
-                                name='ios-menu'
-                                size={25}
-                                backgroundColor={Colors.darkLight}
-                                paddingLeft={10}
-                                alignitems='center'
-                                onPress={() => navigation.openDrawer()}
-                            />
+                            <FontAwesome
+                                name="navicon"
+                                size={24}
+                                backgroundColor='transparent'
+                                color="black"
+                                onPress={() => navigation.openDrawer()} />
                         </View>
                     ),
                     headerRight: () => (
-                        <View style={{ marginRight: 0 }}>
-                            <MaterialCommunityIcons.Button
+                        <View style={{ marginRight: 15 }}>
+                            <MaterialCommunityIcons
                                 name='account-edit'
                                 size={25}
-                                backgroundColor={Colors.gray}
+                                backgroundColor='transparent'
+                                color="black"
                                 onPress={() => navigation.navigate('EditProfile')}
                             />
                         </View>
                     ),
+                    headerTitleAlign: 'center',
                 }}
             />
             <Stack.Screen
