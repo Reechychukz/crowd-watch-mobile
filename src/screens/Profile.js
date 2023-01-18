@@ -22,6 +22,19 @@ import ProfileStack from '../navigators/ProfileStack';
 
 const Profile = () => {
 
+  const userInfo = [{
+    firstName: 'John',
+    lastName: 'Doe',
+    userName: 'j_doe',
+    state: 'Ondo',
+    country: 'Nigeria',
+    phoneNumber: '+234 810 310 2363',
+    emailAddress: 'john_doe@email.com',
+    upvotes: '1,452',
+    downVotes: '55',
+    rating: '96%'
+  }]
+
   // const myCustomShare = async () => {
   //   const shareOptions = {
   //     message: 'Order your next meal from FoodFinder App. I\'ve already ordered more than 10 meals on it.',
@@ -44,7 +57,7 @@ const Profile = () => {
         <View style={{ flexDirection: 'row', marginTop: 15 }}>
           <Avatar.Image
             source={{
-              uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
+              uri: '',
             }}
             size={80}
           />
@@ -129,6 +142,7 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white'
   },
   userInfoSection: {
     paddingHorizontal: 15,
