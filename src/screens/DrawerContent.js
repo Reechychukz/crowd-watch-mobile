@@ -111,8 +111,8 @@ export function DrawerContent(props) {
                             onPress={() => { props.navigation.navigate('SupportScreen') }}
                         />
                     </Drawer.Section>
-                    <Drawer.Section title="Preferences">
-                        <TouchableRipple onPress={() => { toggleTheme() }}>
+                    <Drawer.Section title="Preferences" >
+                        <TouchableRipple onPress={() => { toggleTheme() }} >
                             <View style={styles.preference}>
                                 <Text>Dark Theme</Text>
                                 <View pointerEvents="none">
@@ -181,7 +181,8 @@ const styles = StyleSheet.create({
     preference: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
     },
 });
