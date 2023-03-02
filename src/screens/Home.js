@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 
 import KeyboardAvoidingWrapper from '../components/KeyboardAvoidingWrapper'
@@ -36,6 +36,12 @@ const Home = ({ navigation }) => {
 
       <ScrollView>
         <Posts />
+        <View style={{justifyContent: 'center', alignItems: 'center', padding: 20}}>
+          <Ionicons
+            name='ios-reload-circle-sharp'
+            style={{ fontSize: 60, opacity: 0.2 }}
+          />
+        </View>
       </ScrollView>
     </View>
   )
