@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, View, Text, TouchableOpacity } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -48,7 +49,6 @@ const Posts = () => {
             {
                 postInfo.map((data, index) => {
                     const [upVote, setUpVote] = useState(data.isUpVoted);
-                    const [downVote, setDownVote] = useState(data.isDownVoted);
                     return (
                         <View key={index} style={{
                             paddingBottom: 10,
@@ -60,7 +60,7 @@ const Posts = () => {
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    padding: 15
+                                    padding: 10
                                 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Image source={data.postPersonImage}
@@ -97,17 +97,24 @@ const Posts = () => {
                             </View>
 
                             <View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 10 }}>
                                     <TouchableOpacity onPress={() => setUpVote(!upVote)}>
                                         <FontAwesome name={upVote ? 'thumbs-up' : 'thumbs-o-up'}
                                             style={{
                                                 paddingRight: 10,
-                                                paddingLeft: 15,
                                                 paddingTop: 5,
-                                                fontSize: 25,
+                                                fontSize: 20,
                                             }} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => setDownVote(!downVote)}>
+                                    <TouchableOpacity onPress={() => { }}>
+                                        <FontAwesome name='comment-o'
+                                            style={{
+                                                paddingRight: 10,
+                                                paddingTop: 5,
+                                                fontSize: 20,
+                                            }} />
+                                    </TouchableOpacity>
+                                    {/* <TouchableOpacity onPress={() => setDownVote(!downVote)}>
                                         <FontAwesome name={downVote ? 'thumbs-down' : 'thumbs-o-down'}
                                             style={{
                                                 paddingRight: 10,
@@ -115,7 +122,49 @@ const Posts = () => {
                                                 paddingTop: 5,
                                                 fontSize: 25,
                                             }} />
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
+                                </View>
+                                <View style={{ paddingHorizontal: 10 }}>
+                                    <Text>
+                                        Upvoted by{upVote ? ' you and' : ''}{' '}
+                                        {upVote ? data.upvotes + 1 : data.upvotes} others
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontWeight: '700',
+                                            fontSize: 14,
+                                            paddingVertical: 2,
+                                        }}>
+                                        Okay! Keep working
+                                    </Text>
+                                    <Text style={{ opacity: 0.4, paddingVertical: 2 }}>
+                                        view all comments
+                                    </Text>
+
+                                    <View
+                                        style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image
+                                                source={data.postPersonImage}
+                                                style={{
+                                                    width: 25,
+                                                    height: 25,
+                                                    borderRadius: 100,
+                                                    backgroundColor: 'orange',
+                                                    marginRight: 10
+                                                }}
+                                            />
+                                            <TextInput
+                                                placeholder='Add a comment'
+                                                style={{ opacity: 0.5 }}
+                                            />
+                                        </View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                                        </View>
+                                    </View>
+
+
                                 </View>
                             </View>
 
