@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import DropdownComponent from "../components/Dropdown";
 
 //formik
 import { Formik } from 'formik';
@@ -35,43 +36,43 @@ import {
     TextLink,
     TextLinkContent
 } from "../components/style";
-
-//Colors
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../config/firebase';
+// const auth = getAuth();
+//Colors(
 const { brand, darkLight, primary } = Colors;
 
 const Signup = ({ navigation }) => {
+
+    const [emailName, setEmailName] = useState('');
+    const [password, setPassword] = useState('');
+
     const [hidePassword, setHidePassword] = useState(true);
 
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
-    const handleSignup = (credentials, setSubmitting) => {
+    const handleSignup = async (credentials, setSubmitting) => {
         handleMessage(null);
 
-        const url = 'https://localhost:7142/api/v1/users/register';
+        try {
+            await createUserWithEmailAndPassword(auth, emailName, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log(user.email);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log(errorCode, errorMessage);
+                });
+        } catch (error) {
+            console.log(error);
 
-        axios
-            .post(url, credentials)
-            .then((res) => {
-                console.log(res)
-                const result = res.data;
-
-                const { data, success, message, ...error } = result;
-                // console.log(data)
-
-                if (success != true) {
-                    handleMessage(error.response.data.message, success);
-                } else {
-                    navigation.navigate('Welcome', data);
-                }
-                setSubmitting(false);
-            })
-            .catch((error) => {
-                console.log(error)
-                console.log(error.response.data.message);
-                setSubmitting(false);
-                handleMessage("An error occurred. Check your network and try again");
-            })
+            setSubmitting(false);
+            handleMessage(error.message);
+        }
     }
 
     const handleMessage = (message, type = 'FAILED') => {
@@ -79,8 +80,14 @@ const Signup = ({ navigation }) => {
         setMessageType(type);
     }
 
+    function handleSetEmail(email) {
+        setEmailName(email);
+    }
+
+
+
     const handleGoogleSignin = () => {
-        const config = {iosClientId: `108594035886-t0hi24vjlb4a99go0e0qkcps0k785lc9.apps.googleusercontent.com`}
+        const config = { iosClientId: `108594035886-t0hi24vjlb4a99go0e0qkcps0k785lc9.apps.googleusercontent.com` }
     }
     return (
         <KeyboardAvoidingWrapper>
@@ -90,9 +97,14 @@ const Signup = ({ navigation }) => {
                     <PageTitle>Crowd Watch</PageTitle>
                     <SubTitle>User Account Signup</SubTitle>
                     <Formik
-                        initialValues={{ email: '', userName: '', password: '', confirmPassword: '' }}
-                        onSubmit={(values, { setSubmitting }) => {
-                            if (values.email == '' || values.userName == '' || values.password == '' || values.confirmPassword == '') {
+                        initialValues={{ email: '', userName: '', country: '', state: '', password: '', confirmPassword: '' }}
+                        onSubmit={(values, { setSubmitting, setEmailName }) => {
+                            console.log(values.email)
+                            //handleSetEmail(values.email);
+                            console.log(emailName);
+                            if (values.email == '' || values.userName == ''
+
+                                || values.password == '' || values.confirmPassword == '') {
                                 handleMessage('Please fill all fields');
                                 setSubmitting(false);
                             } else if (values.password !== values.confirmPassword) {
@@ -104,14 +116,18 @@ const Signup = ({ navigation }) => {
                             }
                         }}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
+                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting, }) => (
                             <StyledFormArea>
                                 <MyTextInput
                                     label="Email Address"
                                     icon="mail"
                                     placeholder="johndoe@mail.com"
                                     placeholderTextColor={darkLight}
-                                    onChangeText={handleChange('email')}
+                                    onChangeText={
+                                        handleChange('email')
+                                        //setEmailName(email)
+                                    }
+                                    //onChange={e => setEmailName(e.target.value)}
                                     onBlur={handleBlur('email')}
                                     value={values.email}
                                     keyboardType="email-address"
@@ -127,6 +143,11 @@ const Signup = ({ navigation }) => {
                                     value={values.userName}
                                 />
 
+                                <DropdownComponent
+                                    onChangeText={handleChange('country')}
+                                    value={values.country && values.state}
+                                />
+
                                 <MyTextInput
                                     label="Password"
                                     icon="lock"
@@ -139,6 +160,8 @@ const Signup = ({ navigation }) => {
                                     isPassword={true}
                                     hidePassword={hidePassword}
                                     setHidePassword={setHidePassword}
+                                    password={values.password}
+                                    setPassword={setPassword(password)}
                                 />
 
                                 <MyTextInput
@@ -174,7 +197,7 @@ const Signup = ({ navigation }) => {
                                 </StyledButton>
                                 <ExtraView>
                                     <ExtraText>Already have an account? </ExtraText>
-                                    <TextLink>
+                                    <TextLink onPress={() => navigation.navigate('Login')}>
                                         <TextLinkContent>Login</TextLinkContent>
                                     </TextLink>
                                 </ExtraView>
