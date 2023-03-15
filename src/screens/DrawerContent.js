@@ -20,13 +20,24 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Ionicons } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-//import{ AuthContext } from '../components/context';
+import { getAuth, signOut } from "firebase/auth";
 
 export function DrawerContent(props) {
 
-    const paperTheme = useTheme();
+    const handleSignout = () => {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+          return (
+            <RootStack />
+          )
+        }).catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+        });
+      }
 
-    //const { signOut, toggleTheme } = React.useContext(AuthContext);
+    const paperTheme = useTheme();
 
     return (
         <View style={{ flex: 1 }}>
@@ -133,7 +144,7 @@ export function DrawerContent(props) {
                         />
                     )}
                     label="Sign Out"
-                    onPress={() => { signOut() }}
+                    onPress={handleSignout}
                 />
             </Drawer.Section>
         </View>
