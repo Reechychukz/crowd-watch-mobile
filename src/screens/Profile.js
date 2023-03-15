@@ -13,14 +13,18 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../components/style';
 
+import { firebase } from '../../config/firebase'
+import { getAuth, signOut } from "firebase/auth";
+
+
 const { brand } = Colors;
 import ProfileStack from '../navigators/ProfileStack';
-
+import RootStack from '../navigators/RootStack';
 //import Share from 'react-native-share';
 
 //import files from '../assets/filesBase64';
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
 
   const userInfo = [{
     firstName: 'John',
@@ -35,6 +39,18 @@ const Profile = () => {
     rating: '96%'
   }]
 
+  const handleSignout = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      return (
+        <RootStack />
+      )
+    }).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    });
+  }
   // const myCustomShare = async () => {
   //   const shareOptions = {
   //     message: 'Order your next meal from FoodFinder App. I\'ve already ordered more than 10 meals on it.',
@@ -126,7 +142,7 @@ const Profile = () => {
             <Text style={styles.menuItemText}>Settings</Text>
           </View>
         </TouchableRipple>
-        <TouchableRipple onPress={() => { }}>
+        <TouchableRipple onPress={handleSignout}>
           <View style={styles.menuItem}>
             <Ionicons name="log-out-outline" color={Colors.red} size={25} />
             <Text style={styles.menuItemText}>Logout</Text>
