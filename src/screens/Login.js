@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, ActivityIndicator } from "react-native";
 
+import { firebase } from '../../config/firebase';
 //formik
 import { Formik } from 'formik';
 
@@ -36,39 +37,22 @@ const { brand, darkLight, primary } = Colors;
 //Keyboard avoiding view
 import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
 
-//API Client
-import axios from "axios";
 
 const Login = ({ navigation }) => {
     const [hidePassword, setHidePassword] = useState(true);
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
-    const handleLogin = (credentials, setSubmitting) => {
+    const handleLogin = async(credentials, setSubmitting) => {
         handleMessage(null);
 
-        const url = 'https://localhost:7142/api/v1/users/login';
-
-        axios
-            .post(url, credentials)
-            .then((res) => {
-                const result = res.data;
-
-                const { data, success, message } = result;
-                console.log(error)
-
-                if (success != true) {
-                    handleMessage(error.response.data.message, success);
-                } else {
-                    navigation.navigate('Welcome', data);
-                }
-                setSubmitting(false);
-            })
-            .catch((error) => {
-                console.log(error.response);
-                setSubmitting(false);
-                handleMessage("An error occurred. Check your network and try again");
-            })
+        try{
+            await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
+            setSubmitting(false);
+        } catch(error) {
+            handleMessage(error.message);
+            setSubmitting(false);
+        }
     }
 
     const handleMessage = (message, type = 'FAILED') => {
