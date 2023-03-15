@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
-import DropdownComponent from "../components/Dropdown";
+import { View, ActivityIndicator, Picker, StyleSheet } from "react-native";
 
-//formik
-import { Formik } from 'formik';
+import { firebase } from '../../config/firebase'
 
 //icons
 import { Octicons, Ionicons, Fontisto, AntDesign } from '@expo/vector-icons';
@@ -12,13 +10,9 @@ import { Octicons, Ionicons, Fontisto, AntDesign } from '@expo/vector-icons';
 //Keyboard Avoiding View
 import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
 
-//API Client
-import axios from "axios";
-
 import {
     StyledContainer,
     InnerContainer,
-    PageLogo,
     PageTitle,
     SubTitle,
     StyledFormArea,
@@ -36,41 +30,95 @@ import {
     TextLink,
     TextLinkContent
 } from "../components/style";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../config/firebase';
-// const auth = getAuth();
+
 //Colors(
-const { brand, darkLight, primary } = Colors;
+const { brand, darkLight, primary, secondary } = Colors;
 
 const Signup = ({ navigation }) => {
 
-    const [emailName, setEmailName] = useState('');
+    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const defaultSelectedCountry = countries[0] || { label: "", value: "" };
+    const [selectedCountry, setSelectedCountry] = useState(defaultSelectedCountry);
+    const [selectedState, setSelectedState] = useState('');
+
+    const [loading, setLoading] = useState(false);
 
     const [hidePassword, setHidePassword] = useState(true);
 
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
-    const handleSignup = async (credentials, setSubmitting) => {
+
+    useEffect(() => {
+        fetch('https://geo-info.herokuapp.com/v1/countries')
+            .then(response => response.json())
+            .then(data => setCountries(data))
+            .catch(error => console.error(error));
+    }, []);
+
+    const handleCountryChange = (countryValue, countryIndex) => {
+        const countryLabel = countries[countryIndex].label;
+        setSelectedCountry({ label: countryLabel, value: countryValue });
+        console.log(selectedCountry.value)
+        console.log(selectedState)
+        fetch(`https://geo-info.herokuapp.com/v1/countries/${countryValue}/states/`)
+            .then((response) => {
+                console.log(response)
+                if (response.status === 404) {
+                    throw new Error('Resource not found');
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json()
+            })
+            .then(data => setStates(data))
+            .catch(error => console.error(error));
+    };
+
+
+
+    const handleSignup = async () => {
+        setLoading(true);
         handleMessage(null);
 
         try {
-            await createUserWithEmailAndPassword(auth, emailName, password)
+            await firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user;
-                    console.log(user.email);
+                    firebase.firestore().collection('users')
+                        .doc(user.uid)
+                        .set({
+                            email: email,
+                            username: userName,
+                            country: selectedCountry.value,
+                            state: selectedState,
+                            password: password
+                        })
+                        .then(() => {
+                            console.log('Document successfully written!');
+                            setLoading(false);
+                        })
+                        .catch((error) => {
+                            console.error('Error writing document: ', error);
+                        });
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
                     console.log(errorCode, errorMessage);
+                    handleMessage(errorMessage);
+                    setLoading(false);
                 });
         } catch (error) {
             console.log(error);
 
-            setSubmitting(false);
             handleMessage(error.message);
         }
     }
@@ -80,15 +128,6 @@ const Signup = ({ navigation }) => {
         setMessageType(type);
     }
 
-    function handleSetEmail(email) {
-        setEmailName(email);
-    }
-
-
-
-    const handleGoogleSignin = () => {
-        const config = { iosClientId: `108594035886-t0hi24vjlb4a99go0e0qkcps0k785lc9.apps.googleusercontent.com` }
-    }
     return (
         <KeyboardAvoidingWrapper>
             <StyledContainer>
@@ -96,116 +135,118 @@ const Signup = ({ navigation }) => {
                 <InnerContainer>
                     <PageTitle>Crowd Watch</PageTitle>
                     <SubTitle>User Account Signup</SubTitle>
-                    <Formik
-                        initialValues={{ email: '', userName: '', country: '', state: '', password: '', confirmPassword: '' }}
-                        onSubmit={(values, { setSubmitting, setEmailName }) => {
-                            console.log(values.email)
-                            //handleSetEmail(values.email);
-                            console.log(emailName);
-                            if (values.email == '' || values.userName == ''
 
-                                || values.password == '' || values.confirmPassword == '') {
-                                handleMessage('Please fill all fields');
-                                setSubmitting(false);
-                            } else if (values.password !== values.confirmPassword) {
-                                handleMessage('Passwords do not match');
-                                setSubmitting(false);
-                            }
-                            else {
-                                handleSignup(values, setSubmitting);
-                            }
-                        }}
-                    >
-                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting, }) => (
-                            <StyledFormArea>
-                                <MyTextInput
-                                    label="Email Address"
-                                    icon="mail"
-                                    placeholder="johndoe@mail.com"
-                                    placeholderTextColor={darkLight}
-                                    onChangeText={
-                                        handleChange('email')
-                                        //setEmailName(email)
-                                    }
-                                    //onChange={e => setEmailName(e.target.value)}
-                                    onBlur={handleBlur('email')}
-                                    value={values.email}
-                                    keyboardType="email-address"
-                                />
+                    <StyledFormArea>
+                        <MyTextInput
+                            label="Email Address"
+                            icon="mail"
+                            placeholder="johndoe@mail.com"
+                            placeholderTextColor={darkLight}
+                            onChangeText={setEmail}
+                            value={email}
+                            keyboardType="email-address"
+                        />
 
-                                <MyTextInput
-                                    label="Username"
-                                    icon="person"
-                                    placeholder="johndoe123"
-                                    placeholderTextColor={darkLight}
-                                    onChangeText={handleChange('userName')}
-                                    onBlur={handleBlur('userName')}
-                                    value={values.userName}
-                                />
+                        <MyTextInput
+                            label="Username"
+                            icon="person"
+                            placeholder="johndoe123"
+                            placeholderTextColor={darkLight}
+                            onChangeText={setUserName}
+                            value={userName}
+                        />
 
-                                <DropdownComponent
-                                    onChangeText={handleChange('country')}
-                                    value={values.country && values.state}
-                                />
+                        <View>
+                            <LeftIcon>
+                                <Octicons name='globe' size={30} color={brand} />
+                            </LeftIcon>
+                            <StyledInputLabel>Country</StyledInputLabel>
+                            <Picker
+                                style={styles.dropdown}
+                                selectedValue={selectedCountry.value}
+                                onValueChange={handleCountryChange}
+                            >
+                                <Picker.Item label="Select a country" value="" />
+                                {countries.map((country, index) => (
+                                    <Picker.Item key={index} label={country.name} value={country.short} />
+                                ))}
+                            </Picker>
+                        </View>
 
-                                <MyTextInput
-                                    label="Password"
-                                    icon="lock"
-                                    placeholder="* * * * * * * *"
-                                    placeholderTextColor={darkLight}
-                                    onChangeText={handleChange('password')}
-                                    onBlur={handleBlur('password')}
-                                    value={values.password}
-                                    secureTextEntry={hidePassword}
-                                    isPassword={true}
-                                    hidePassword={hidePassword}
-                                    setHidePassword={setHidePassword}
-                                    password={values.password}
-                                    setPassword={setPassword(password)}
-                                />
+                        <View>
+                            <LeftIcon>
+                                <Octicons name='globe' size={30} color={brand} />
+                            </LeftIcon>
+                            <StyledInputLabel>State</StyledInputLabel>
+                            <Picker
+                                style={styles.dropdown}
+                                selectedValue={selectedState}
+                                onValueChange={(itemValue) => {
+                                    setSelectedState(itemValue)
+                                    console.log(selectedCountry.label)
+                                }}>
+                                <Picker.Item label="Select a state" value="" />
 
-                                <MyTextInput
-                                    label="Confirm Password"
-                                    icon="lock"
-                                    placeholder="* * * * * * * *"
-                                    placeholderTextColor={darkLight}
-                                    onChangeText={handleChange('confirmPassword')}
-                                    onBlur={handleBlur('confirmPassword')}
-                                    value={values.confirmPassword}
-                                    secureTextEntry={hidePassword}
-                                    isPassword={true}
-                                    hidePassword={hidePassword}
-                                    setHidePassword={setHidePassword}
-                                />
-                                <MsgBox type={messageType}>{message}</MsgBox>
+                                {states?.map((state, index) => (
+                                    <Picker.Item key={index} label={state.name} value={state.name} />
+                                ))}
+                            </Picker>
+                        </View>
 
-                                {!isSubmitting && (
-                                    <StyledButton onPress={handleSubmit}>
-                                        <ButtonText>Signup</ButtonText>
-                                    </StyledButton>)}
+                        <MyTextInput
+                            label="Password"
+                            icon="lock"
+                            placeholder="* * * * * * * *"
+                            placeholderTextColor={darkLight}
+                            onChangeText={setPassword}
+                            value={password}
+                            secureTextEntry={hidePassword}
+                            isPassword={true}
+                            hidePassword={hidePassword}
+                            setHidePassword={setHidePassword}
+                        />
 
-                                {isSubmitting && (
-                                    <StyledButton disabled={true}>
-                                        <ActivityIndicator size="large" color={primary} />
-                                    </StyledButton>
-                                )}
+                        <MyTextInput
+                            label="Confirm Password"
+                            icon="lock"
+                            placeholder="* * * * * * * *"
+                            placeholderTextColor={darkLight}
+                            onChangeText={setConfirmPassword}
+                            value={confirmPassword}
+                            secureTextEntry={hidePassword}
+                            isPassword={true}
+                            hidePassword={hidePassword}
+                            setHidePassword={setHidePassword}
+                        />
+                        <MsgBox type={messageType}>{message}</MsgBox>
 
-                                <Line />
-                                <StyledButton google={true} onPress={handleSubmit}>
-                                    <Fontisto name="google" color={primary} size={25} />
-                                    <ButtonText google={true}>Sign in with Google</ButtonText>
-                                </StyledButton>
-                                <ExtraView>
-                                    <ExtraText>Already have an account? </ExtraText>
-                                    <TextLink onPress={() => navigation.navigate('Login')}>
-                                        <TextLinkContent>Login</TextLinkContent>
-                                    </TextLink>
-                                </ExtraView>
-                            </StyledFormArea>)}
-                    </Formik>
+                        {!loading && (
+                            <StyledButton onPress={handleSignup}>
+                                <ButtonText>Sign up</ButtonText>
+                            </StyledButton>
+                        )}
+
+                        {loading && (
+                            <StyledButton disabled={true}>
+                                <ActivityIndicator size="large" color={primary} />
+                            </StyledButton>
+                        )}
+
+                        <Line />
+                        <StyledButton google={true} onPress={handleSignup}>
+                            <Fontisto name="google" color={primary} size={25} />
+                            <ButtonText google={true}>Sign in with Google</ButtonText>
+                        </StyledButton>
+                        <ExtraView>
+                            <ExtraText>Already have an account? </ExtraText>
+                            <TextLink onPress={() => navigation.navigate('Login')}>
+                                <TextLinkContent>Login</TextLinkContent>
+                            </TextLink>
+                        </ExtraView>
+                    </StyledFormArea>
                 </InnerContainer>
             </StyledContainer>
-        </KeyboardAvoidingWrapper>
+        </KeyboardAvoidingWrapper >
     )
 }
 
@@ -225,5 +266,54 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    dropdown: {
+        backgroundColor: secondary,
+        padding: 15,
+        paddingLeft: 55,
+        paddingRight: 15,
+        borderRadius: 5,
+        height: 60,
+        marginVertical: 3,
+        marginBottom: 10
+    },
+    icon: {
+        right: '15px',
+        top: '38px',
+        position: 'absolute',
+        zIndex: 1
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: secondary,
+        left: 22,
+        top: 8,
+        zIndex: 100,
+        paddingHorizontal: 8,
+        fontSize: 14,
+        placeholderTextColor: "#9CA3AF"
+    },
+    placeholderStyle: {
+        fontSize: 16,
+        color: "#9CA3AF",
+        placeholderTextColor: "#9CA3AF"
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+});
 
 export default Signup;
