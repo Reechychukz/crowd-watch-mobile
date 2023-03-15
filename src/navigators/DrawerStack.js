@@ -14,12 +14,12 @@ const Drawer = createDrawerNavigator();
 
 const DrawerStack = () => {
   return (
-    <NavigationContainer>
+    //<NavigationContainer>
       <Drawer.Navigator
         screenOptions={{ headerShown: false }} drawerContent={props => <DrawerContent {...props} />}>
         <Drawer.Screen name='DrawerStack' component={TabStack} />
       </Drawer.Navigator>
-    </NavigationContainer>
+    //</NavigationContainer>
   )
 }
 
