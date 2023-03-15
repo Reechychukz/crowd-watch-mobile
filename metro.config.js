@@ -1,7 +1,7 @@
-const { getDefaultConfig } = require("@expo/metro-config");
+const { getDefaultConfig } = require('@expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
-
-defaultConfig.resolver.assetExts.push("cjs");
+console.log(__dirname);
+defaultConfig.resolver.assetExts.push('cjs');
 
 module.exports = defaultConfig;
