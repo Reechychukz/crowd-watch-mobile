@@ -1,7 +1,8 @@
-import { initializeApp } from 'firebase/app';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 import Constants from 'expo-constants';
 
-// import "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: Constants.manifest?.extra?.firebaseApiKey,
@@ -12,7 +13,12 @@ const firebaseConfig = {
     appId: Constants.manifest?.extra?.firebaseAppId,
 };
 
-// export const fireDB = app.firestore();
-const app = initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+//const db = app.firestore();
+// const app = initializeApp(firebaseConfig);
 
-export default app;
+// const auth = getAuth(app);
+
+export { firebase };
