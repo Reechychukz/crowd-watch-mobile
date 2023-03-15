@@ -26,6 +26,7 @@ const TabStack = () => {
                     options={{
                         headerShown: false,
                         tabBarLabel: 'Home',
+                        tabBarShowLabel: false,
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="home" color={color} size={size} />
                         )
@@ -36,6 +37,7 @@ const TabStack = () => {
                     component={Emergency}
                     options={{
                         tabBarLabel: 'Emergency',
+                        tabBarShowLabel: false,
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="alert-circle" color={color} size={size} />
                         )
@@ -46,6 +48,7 @@ const TabStack = () => {
                     component={Friends}
                     options={{
                         tabBarLabel: 'Friends',
+                        tabBarShowLabel: false,
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="account-group" color={color} size={size} />
                         )
