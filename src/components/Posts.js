@@ -1,53 +1,118 @@
-import React, { useState } from 'react';
-import { Image, View, Text, TouchableOpacity } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import React, { useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet, ScrollView, FlatList, Image } from 'react-native';
+import { TextInput, Divider } from 'react-native-paper';
 
+import Carousel, { Pagination } from 'react-native-new-snap-carousel';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { Colors } from './style';
+// import LagosFire from '../../assets/img/lagos-fire.webp';
+// import DPImg from '../../assets/img/dp.jpg'; 
+
 
 const Posts = () => {
-    const postInfo = [
+    const LagosFire = 'https://img.freepik.com/free-vector/realistic-autumn-landscape-with-yellow-leaves_23-2149191543.jpg';
+    const DPImg = 'https://img.freepik.com/free-vector/flat-design-autumnal-background_52683-43406.jpg';
+
+    const scrollViewRef = useRef();
+
+    const PostInfo = [
         {
             userName: 'MarkDoe121',
-            postPersonImage: require('../../assets/img/dp.jpg'),
-            postText: "Fire outbreak",
+            postPersonImage: require('../../assets/img/lagos-fire.webp'),
+            caption: "Fire outbreak",
             typeOfEmergency: 'Fire outbreak',
             location: 'Lagos, Nigeria',
-            postMedia: require('../../assets/img/lagos-fire.webp'),
+            postMedia: [LagosFire, LagosFire],
             upvotes: 300,
             downvotes: 240,
             isUpVoted: false,
-            isDownVoted: false
+            isDownVoted: false,
+            comments: [
+                {
+                    user: 'jondoe',
+                    comment: 'Thanks for the update..'
+                },
+                {
+                    user: 'malik750',
+                    comment: "Wow... That's sad"
+                },
+            ]
         },
         {
             userName: 'bat_eyes',
-            postPersonImage: require('../../assets/img/dp.jpg'),
-            postText: "Fire outbreak",
+            postPersonImage: DPImg,
+            caption: "Fire outbreak",
             typeOfEmergency: 'Fire outbreak',
             location: 'Lagos, Nigeria',
-            postMedia: require('../../assets/img/lagos-fire.webp'),
+            postMedia: [DPImg, LagosFire],
             upvotes: 100,
             downvotes: 10,
             isUpVoted: false,
-            isDownVoted: false
+            isDownVoted: false,
+            comments: [
+                {
+                    user: 'jondoe',
+                    comment: 'Thanks for the update..'
+                },
+                {
+                    user: 'malik750',
+                    comment: "Wow... That's sad"
+                },
+                {
+                    user: 'malik750',
+                    comment: "Wow... That's sad"
+                },
+            ]
         },
         {
             userName: 'geulimja',
-            postPersonImage: require('../../assets/img/dp.jpg'),
-            postText: "Fire outbreak",
-            typeOfEmergency: 'Fire outbreak',
+            postPersonImage: DPImg,
+            capiion: "Fire outbreak",
             location: 'Lagos, Nigeria',
-            postMedia: require('../../assets/img/lagos-fire.webp'),
+            postMedia: [LagosFire, LagosFire],
             upvotes: 150,
             downvotes: 20,
             isUpVoted: false,
-            isDownVoted: false
+            isDownVoted: false,
+            comments: [
+                {
+                    user: 'jondoe',
+                    comment: 'Thanks for the update..'
+                },
+                {
+                    user: 'malik750',
+                    comment: "Wow... That's sad"
+                },
+            ]
         }
-    ]
+    ];
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const handleScroll = (event) => {
+        const slideSize = event.nativeEvent.layoutMeasurement.width;
+        const currentIndex = event.nativeEvent.contentOffset.x / slideSize;
+        setActiveIndex(currentIndex);
+    };
+
+    const handleSwipe = (direction) => {
+        const newIndex = direction === 'right' ? activeIndex - 1 : activeIndex + 1;
+        if (newIndex < 0 || newIndex >= data.length) {
+            return;
+        }
+        setActiveIndex(newIndex);
+        scrollViewRef.current.scrollTo({ x: newIndex * Dimensions.get('window').width });
+    };
+
+
+
     return (
+
         <View>
+            <Divider />
             {
-                postInfo.map((data, index) => {
+                PostInfo.map((data, index) => {
                     const [upVote, setUpVote] = useState(data.isUpVoted);
                     return (
                         <View key={index} style={{
@@ -63,6 +128,7 @@ const Posts = () => {
                                     padding: 10
                                 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
                                     <Image source={data.postPersonImage}
                                         style={
                                             {
@@ -93,7 +159,45 @@ const Posts = () => {
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }}>
-                                <Image source={data.postMedia} style={{ width: '100%', height: 400 }} />
+                                <View style={styles.container}>
+                                    <ScrollView
+                                        horizontal
+                                        pagingEnabled
+                                        showsHorizontalScrollIndicator={false}
+                                        onScroll={handleScroll}
+                                        contentContainerStyle={styles.scrollViewContent}
+                                        style={styles.scrollView}
+                                        ref={scrollViewRef}
+                                        scrollEventThrottle={250}
+                                    >
+                                        {
+                                            data.postMedia.map((image, index) => (
+                                                <Image
+                                                    key={index}
+                                                    source={{ uri: image }}
+                                                    style={[styles.image, index !== data.postMedia.length - 1 && styles.imageMargin]}
+                                                />
+                                            ))
+                                        }
+                                    </ScrollView>
+
+                                    <View style={styles.pagination}>
+                                        {data.postMedia.map((item, index) => (
+                                            <View key={index} style={[styles.dot, activeIndex === index && styles.dotActive]} />
+                                        ))}
+                                    </View>
+
+                                    <View style={styles.swipeContainer}>
+                                        <View style={styles.swipeButton} onTouchEnd={() => handleSwipe('left')}>
+                                            <View style={styles.swipeButtonInner} />
+                                        </View>
+                                        <View style={styles.swipeButton} onTouchEnd={() => handleSwipe('right')}>
+                                            <View style={[styles.swipeButtonInner, styles.swipeButtonInnerRight]} />
+                                        </View>
+                                    </View>
+
+
+                                </View>
                             </View>
 
                             <View>
@@ -114,15 +218,7 @@ const Posts = () => {
                                                 fontSize: 20,
                                             }} />
                                     </TouchableOpacity>
-                                    {/* <TouchableOpacity onPress={() => setDownVote(!downVote)}>
-                                        <FontAwesome name={downVote ? 'thumbs-down' : 'thumbs-o-down'}
-                                            style={{
-                                                paddingRight: 10,
-                                                paddingLeft: 15,
-                                                paddingTop: 5,
-                                                fontSize: 25,
-                                            }} />
-                                    </TouchableOpacity> */}
+
                                 </View>
                                 <View style={{ paddingHorizontal: 10 }}>
                                     <Text>
@@ -137,9 +233,24 @@ const Posts = () => {
                                         }}>
                                         Okay! Keep working
                                     </Text>
-                                    <Text style={{ opacity: 0.4, paddingVertical: 2 }}>
-                                        view all comments
-                                    </Text>
+                                    {data.comments.length && (
+                                        < Text style={{ opacity: 0.4, paddingVertical: 2 }}>
+
+                                            View{data.comments.length > 1 ? ' all' : ''} {data.comments.length}{' '}
+                                            {data.comments.length > 1 ? 'comments' : 'comment'}
+                                        </Text>
+                                    )}
+
+                                    <>
+                                        {data.comments.map((comment, index) => (
+                                            <View key={index} style={{ flexDirection: 'row', marginTop: 5 }}>
+                                                <Text style={{ color: 'black' }}>
+                                                    <Text style={{ fontWeight: '600' }}>{comment.user}</Text>{' '}
+                                                    {comment.comment}
+                                                </Text>
+                                            </View>
+                                        ))}
+                                    </>
 
                                     <View
                                         style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -175,5 +286,43 @@ const Posts = () => {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        position: 'relative',
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollViewContent: {
+        paddingRight: 16,
+    },
+    image: {
+        width: Dimensions.get('window').width - 16, // Subtracting 16 to account for margin
+        height: 300,
+        resizeMode: 'cover',
+    },
+    imageMargin: {
+        marginRight: 16,
+    },
+
+    pagination: {
+        position: 'absolute',
+        bottom: 16,
+        alignSelf: 'center',
+        flexDirection: 'row',
+    },
+    dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#999',
+        marginHorizontal: 4,
+    },
+    dotActive: {
+        backgroundColor: '#333',
+    },
+})
 
 export default Posts
