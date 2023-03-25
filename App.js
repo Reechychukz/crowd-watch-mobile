@@ -8,6 +8,7 @@ import AppLoading from 'expo-app-loading';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import "setimmediate";
 
 import {firebase} from './config/firebase';
 
