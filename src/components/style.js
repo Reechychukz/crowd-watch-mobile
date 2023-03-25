@@ -13,6 +13,7 @@ export const Colors = {
     green: "#10B981",
     red: "#EF4444",
     gray: "#6B7280",
+    black: "000000",
     lightGreen: "rgba(16, 185, 129, 0.1)"
 };
 
@@ -111,9 +112,16 @@ export const LeftIcon = styled.View`
     z-index: 1;
 `;
 
+export const LeftIconB = styled.View`
+    left: 10px;
+    top: 15px;
+    position: absolute;
+    z-index: 1;
+`;
+
 export const RightIcon = styled.TouchableOpacity`
     right: 15px;
-    top: 38px;
+    top: 35px;
     position: absolute;
     z-index: 1;
 `;
