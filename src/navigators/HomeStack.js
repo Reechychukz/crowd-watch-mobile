@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/Home';
 import NewPost from '../screens/NewPost';
+import CommentScreen from '../screens/CommentSreen';
 
 import { Colors } from '../components/style';
 
@@ -54,6 +55,14 @@ const HomeStack = ({ navigation }) => {
                     title: 'New Post',
                 }}
                 component={NewPost}
+            />
+
+            <Stack.Screen
+                name="COMMENT"
+                options={{
+                    title: 'Comments',
+                }}
+                component={CommentScreen}
             />
         </Stack.Navigator>
     )
