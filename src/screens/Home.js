@@ -18,32 +18,22 @@ import KeyboardAvoidingWrapper from '../components/KeyboardAvoidingWrapper'
 import { InnerContainer, PageTitle, StyledContainer } from '../components/style';
 import Posts from '../components/Posts';
 
-const Home = ({ navigation }) => {
+const Home = (props) => {
   return (
-    <View style={styles.homeLayout}>
-      <StatusBar backgroundColor='white' barStyle='dark-content' animated={true} />
-      <View style={styles.header}>
-        <FontAwesome name="navicon" size={24} color="black" onPress={() => navigation.openDrawer()} />
-        <Text style={{ fontFamily: 'roboto-regular', fontSize: 22 }}>
-          News Feed
-        </Text>
-        <FontAwesome name="plus-square-o" size={24} color="black" />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.homeLayout}>
+        <StatusBar backgroundColor='white' barStyle='dark-content' animated={true} />
+        <ScrollView>
+          <Posts navigation={props.navigation} />
+          <View style={{ justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+            <Ionicons
+              name='ios-reload-circle-sharp'
+              style={{ fontSize: 60, opacity: 0.2 }}
+            />
+          </View>
+        </ScrollView>
       </View>
-      <View style={{
-
-      }}>
-      </View>
-
-      <ScrollView>
-        <Posts />
-        <View style={{justifyContent: 'center', alignItems: 'center', padding: 20}}>
-          <Ionicons
-            name='ios-reload-circle-sharp'
-            style={{ fontSize: 60, opacity: 0.2 }}
-          />
-        </View>
-      </ScrollView>
-    </View>
+    </SafeAreaView>
   )
 }
 
