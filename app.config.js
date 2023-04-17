@@ -31,7 +31,10 @@ export default {
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "host.expo.exponent"
+      "bundleIdentifier": "host.expo.exponent",
+      "config": {
+        "googleMapsApiKey": "YOUR_API_KEY_HERE"
+      }
     },
     "android": {
       "permissions": [],
@@ -39,7 +42,12 @@ export default {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "host.exp.exponent"
+      "package": "host.exp.exponent",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAbLO-NJoYcApUD5g9yXg3sfcMB6ApCt9w"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -51,6 +59,7 @@ export default {
       firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET,
       firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.FIREBASE_APP_ID,
+      mapBoxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
     }
 
   }
