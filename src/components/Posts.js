@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet, ScrollView, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet, ScrollView, FlatList, Image, SafeAreaView } from 'react-native';
 import { TextInput, Divider } from 'react-native-paper';
 
-import Carousel, { Pagination } from 'react-native-new-snap-carousel';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Colors } from './style';
@@ -10,7 +9,7 @@ import { Colors } from './style';
 // import DPImg from '../../assets/img/dp.jpg'; 
 
 
-const Posts = () => {
+const Posts = (props) => {
     const LagosFire = 'https://img.freepik.com/free-vector/realistic-autumn-landscape-with-yellow-leaves_23-2149191543.jpg';
     const DPImg = 'https://img.freepik.com/free-vector/flat-design-autumnal-background_52683-43406.jpg';
 
@@ -109,7 +108,7 @@ const Posts = () => {
 
     return (
 
-        <View>
+        <SafeAreaView style={styles.container}>
             <Divider />
             {
                 PostInfo.map((data, index) => {
@@ -234,15 +233,17 @@ const Posts = () => {
                                         Okay! Keep working
                                     </Text>
                                     {data.comments.length && (
-                                        < Text style={{ opacity: 0.4, paddingVertical: 2 }}>
+                                        <TouchableOpacity onPress={() => props.navigation.navigate('COMMENT')}>
+                                            <Text style={{ opacity: 0.4, paddingVertical: 2 }}>
 
-                                            View{data.comments.length > 1 ? ' all' : ''} {data.comments.length}{' '}
-                                            {data.comments.length > 1 ? 'comments' : 'comment'}
-                                        </Text>
+                                                View{data.comments.length > 1 ? ' all' : ''} {data.comments.length}{' '}
+                                                {data.comments.length > 1 ? 'comments' : 'comment'}
+                                            </Text>
+                                        </TouchableOpacity>
                                     )}
 
                                     <>
-                                        {data.comments.map((comment, index) => (
+                                        {data.comments.slice(0, 2).map((comment, index) => (
                                             <View key={index} style={{ flexDirection: 'row', marginTop: 5 }}>
                                                 <Text style={{ color: 'black' }}>
                                                     <Text style={{ fontWeight: '600' }}>{comment.user}</Text>{' '}
@@ -283,7 +284,8 @@ const Posts = () => {
                     )
                 })
             }
-        </View>
+
+        </SafeAreaView>
     )
 }
 
