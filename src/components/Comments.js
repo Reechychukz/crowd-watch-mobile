@@ -1,7 +1,9 @@
 import React from 'react';
-import { Image, SafeAreaView, Text, View } from 'react-native';
+import { Image, SafeAreaView, Text, View, Dimensions } from 'react-native';
 import { Divider } from 'react-native-paper';
 import KeyboardAvoidingWrapper from './KeyboardAvoidingWrapper';
+
+const { width, height } = Dimensions.get('window');
 
 const Comments = () => {
 
@@ -98,7 +100,7 @@ const Comments = () => {
                                                     fontSize: 15,
                                                     fontWeight: 'normal',
                                                     marginLeft: 10,
-                                                    maxWidth: '85VW'
+                                                    maxWidth: width * 0.8
                                                 }
                                             }>
                                             {data.comment}
