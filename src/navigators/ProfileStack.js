@@ -22,21 +22,7 @@ const ProfileStack = ({ navigation }) => {
     const colors = useTheme();
     return (
         <Stack.Navigator
-            screenOptions={{
-                // headerStyle: {
-                //     backgroundColor: 'transparent',
-                //     shadowColor: colors.background, // iOS
-                //     elevation: 0, // Android
-                // },
-                // headerTintColor: tertiary,
-                // headerTransparent: true,
-                // headerTitle: '',
-                // headerLeftContainerStyle: {
-                //     paddingLeft: 15
-                // }
-
-            }}
-            initialRouteName='Profile'
+            initialRouteName='PROFILE'
         >
             <Stack.Screen
                 name='Profile'
