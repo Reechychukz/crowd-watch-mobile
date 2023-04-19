@@ -31,6 +31,8 @@ import {
     TextLinkContent
 } from "../components/style";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 //Colors(
 const { brand, darkLight, primary, secondary } = Colors;
 
@@ -88,7 +90,7 @@ const Signup = ({ navigation }) => {
         handleMessage(null);
 
         try {
-            await firebase.auth().createUserWithEmailAndPassword(email, password)
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user;
@@ -101,7 +103,11 @@ const Signup = ({ navigation }) => {
                             state: selectedState,
                             password: password
                         })
-                        .then(() => {
+                        .then(async () => {
+                            const userRef = firebase.firestore().collection('users').doc(user.uid);
+                            const userDoc = await userRef.get();
+                            const userObj = userDoc.data();
+                            await AsyncStorage.setItem('user', JSON.stringify(userObj));
                             console.log('Document successfully written!');
                             setLoading(false);
                         })

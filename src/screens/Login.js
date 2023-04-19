@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, ActivityIndicator } from "react-native";
+import {
+    View,
+    ActivityIndicator,
+} from "react-native";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { firebase } from '../../config/firebase';
 //formik
@@ -43,13 +48,21 @@ const Login = ({ navigation }) => {
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
-    const handleLogin = async(credentials, setSubmitting) => {
+    const handleLogin = async (credentials, setSubmitting) => {
         handleMessage(null);
 
-        try{
-            await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password);
+        const user = userCredential.user;
+        try {
+
+            const userRef = firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid);
+            const userDoc = await userRef.get();
+            const userObj = userDoc.data();
+            console.log(userObj)
+            AsyncStorage.setItem('user', JSON.stringify(userObj));
             setSubmitting(false);
-        } catch(error) {
+        } catch (error) {
+            console.log(error)
             handleMessage(error.message);
             setSubmitting(false);
         }
