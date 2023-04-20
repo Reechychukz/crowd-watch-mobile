@@ -15,6 +15,7 @@ import { Colors } from '../components/style';
 
 import { firebase } from '../../config/firebase'
 import { getAuth, signOut } from "firebase/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const { brand } = Colors;
@@ -39,9 +40,24 @@ const Profile = ({ navigation }) => {
     rating: '96%'
   }]
 
-  const handleSignout = () => {
+  const getUser = async () => {
+    console.log(1)
+    try {
+      const user = await AsyncStorage.getItem('user');
+      if (user !== null) {
+        console.log(JSON.parse(user));
+      }
+    }
+    catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+  const handleSignout = async () => {
     const auth = getAuth();
+
     signOut(auth).then(() => {
+      AsyncStorage.removeItem('user');
       return (
         <RootStack />
       )
@@ -130,7 +146,7 @@ const Profile = ({ navigation }) => {
             <Text style={styles.menuItemText}>Tell Your Friends</Text>
           </View>
         </TouchableRipple>
-        <TouchableRipple onPress={() => { }}>
+        <TouchableRipple onPress={getUser}>
           <View style={styles.menuItem}>
             <Icon name="account-check-outline" color={Colors.brand} size={25} />
             <Text style={styles.menuItemText}>Support</Text>
@@ -149,7 +165,7 @@ const Profile = ({ navigation }) => {
           </View>
         </TouchableRipple>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 
