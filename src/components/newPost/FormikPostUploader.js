@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     Button,
     TouchableOpacity,
     StyleSheet,
+    Dimensions
 } from 'react-native';
 import { Video } from 'expo-av';
 import Animated from 'react-native-reanimated';
@@ -15,34 +16,136 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { Divider } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
+import { geocodeAsync } from 'expo-location';
+// import { setGoogleApiKey } from 'expo-location';
+import Constants from 'expo-constants';
+
+import Mapbox from '@rnmapbox/maps';
+
+Mapbox.setAccessToken('pk.eyJ1IjoicmVlY2h5Y2h1a3oiLCJhIjoiY2xnN2Q0OXF1MDQybTNkcnZnNHZ3aHN2eSJ9.lrTTvWEhjmzrShv8HWxTJw')
+
+
+const { width, height } = Dimensions.get('window');
+
+// Set your Google API key
+//setGoogleApiKey('AIzaSyAbLO-NJoYcApUD5g9yXg3sfcMB6ApCt9w');
 
 const PLACEHOLDER_IMG = 'https://www.brownweiraub.com/wp-content/uploads/2017/09/placeholder'
-const uploadPostSchema = Yup.object().shape({
-    imageUrl: Yup.array().of(
-        Yup.object().shape(
-            Yup.string()
-                .url('Image must be a valide url')
-                .required('A URL is required'),
-        )),
-    caption: Yup.string().max(2200, 'Caption has reached the character limit')
-})
 
-
+//MapboxGL.setAccessToken(Constants.manifest?.extra?.mapBoxAccessToken);
 
 const FormikPostUploader = () => {
 
-    const [thumbnailUrl, setThumbnailUrl] = useState([]);
+    const [thumbnailUrl, setThumbnailUrl] = useState('');
+    const [mediaUrl, setMediaUrl] = useState([]);
+    const [address, setAddress] = useState('');
+    const [caption, setCaption] = useState('');
+    const [region, setRegion] = useState(null);
+    const [showMap, setShowMap] = useState(false);
+
+    const player = useRef(null);
+
     const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
-    const renderItem = ({ item }) => {
-        return (
-            <View style={styles.itemContainer}>
-                <Image source={{ uri: item.image }} style={styles.image} />
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.text}>{item.text}</Text>
-            </View>
-        );
-    };
+    useEffect(() => {
+        // Customize the map style using the Bing Maps REST APIs
+        fetch(`http://dev.virtualearth.net/REST/v1/Imagery/MapStyles/Aerial?key=${BingMapsApiKey}`)
+            .then((response) => response.json())
+            .then((data) => {
+                const style = [
+                    {
+                        featureType: 'all',
+                        elementType: 'labels',
+                        stylers: [{ visibility: 'off' }],
+                    },
+                ];
+
+                // Add the map style to the state
+                setMapStyle(style.concat(data.resourceSets[0].resources[0].style));
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
+
+    // useEffect(() => {
+    //     const getCoordinates = async () => {
+    //         const result = await geocodeAsync(address);
+    //         if (result.length > 0) {
+    //             const { latitude, longitude } = result[0];
+    //             setRegion({
+    //                 latitude,
+    //                 longitude,
+    //                 latitudeDelta: 0.0922,
+    //                 longitudeDelta: 0.0421,
+    //             });
+    //         }
+    //     };
+    //     getCoordinates();
+    // }, [address]);
+
+    // const getThumbnailUri = (mediaArray) => {
+    //     if (mediaArray.length > 0) {
+    //         console.log(mediaArray);
+    //         if (mediaArray[0].endsWith('.mp4' || '.mov')) {
+    //             useEffect(() => {
+    //                 async function extractThumbnail() {
+    //                     try {
+    //                         const video = await Video.createAsync({ uri: videoUrl });
+    //                         const { uri } = await video.getThumbnailAsync();
+    //                         setThumbnailUrl(uri);
+    //                     } catch (error) {
+    //                         console.log(error);
+    //                     }
+    //                 }
+    //                 extractThumbnail();
+    //             }, [videoUrl]);
+    //         } else {
+    //             useEffect(() => {
+    //                 async function extractThumbnail() {
+    //                     try {
+    //                         const image = await Image.createAsync({ uri: mediaArray[0] });
+    //                         const { uri } = await image.getThumbnailAsync();
+    //                         setThumbnailUrl(uri);
+    //                     } catch (error) {
+    //                         console.log(error);
+    //                     }
+    //                 }
+    //                 extractThumbnail();
+    //             }, [mediaUrl])
+    //         }
+    //     }
+    //     return
+    // }
+
+    const getThumbnailUri = async (mediaArray) => {
+        if (mediaArray.length > 0) {
+            console.log(mediaArray);
+            if (mediaArray[0].endsWith('.mp4' || '.mov')) {
+                try {
+                    const video = await Video.createAsync({ uri: videoUrl });
+                    const { uri } = await video.getThumbnailAsync();
+                    return uri;
+                } catch (error) {
+                    console.log(error);
+                    return null;
+                }
+            } else {
+                try {
+                    const asset = await MediaLibrary.getAssetInfoAsync(mediaArray[0]);
+                    const { uri } = await MediaLibrary.getAssetInfoAsync(asset.localUri);
+                    return uri;
+                } catch (error) {
+                    console.log(error);
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
 
     const renderInner = () => (
         <View style={styles.panel}>
@@ -85,7 +188,7 @@ const FormikPostUploader = () => {
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsMultipleSelection: true,
             orderedSelection: true,
-            selectionLimit: 0,
+            selectionLimit: true,
             //aspect: [4, 3],
             quality: 1,
         });
@@ -107,7 +210,8 @@ const FormikPostUploader = () => {
                 );
             }
             console.log(mediaArray)
-            setThumbnailUrl(mediaArray);
+            setMediaUrl(mediaArray);
+            getThumbnailUri(mediaArray);
             bs.current.snapTo(1);
         }
     };
@@ -134,8 +238,9 @@ const FormikPostUploader = () => {
         console.log(result);
 
         if (!result.cancelled) {
-
-            setThumbnailUrl(result.uri);
+            const mediaUri = [];
+            mediaUri.push(result.uri);
+            setMediaUrl(mediaUri);
         }
     };
 
@@ -156,53 +261,53 @@ const FormikPostUploader = () => {
                 marginBottom: 550,
                 opacity: Animated.add(0.1, Animated.multiply(fall, 1.0)),
             }}>
-                <Formik
-                    initialValues={{ caption: '', imageUrl: thumbnailUrl }}
-                    onSubmit={(values) => console.log(values)}
-                    validationSchema={uploadPostSchema}
-                    validateOnMount={true}
-                >
-                    {({
-                        handleBlur,
-                        handleChange,
-                        handleSubmit,
-                        values,
-                        errors,
-                        isValid
-                    }) => (
-                        <>
-                            <View style={{
-                                margin: 20,
-                                justifyContent: 'space-between',
-                                flexDirection: 'row'
-                            }}>
-                                <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
-                                    {!thumbnailUrl[0].endsWith('.mov' || '.jpg') &&
-                                        <Image
-                                            source={{ uri: thumbnailUrl ? thumbnailUrl : PLACEHOLDER_IMG }}
-                                            style={{ width: 100, height: 100 }} />
-                                    }
-                                    {thumbnailUrl[0].endsWith('.mov' || '.jpg') &&
-                                        <Video
-                                            source={{ uri: thumbnailUrl ? thumbnailUrl : PLACEHOLDER_IMG }}
-                                            style={{ width: 100, height: 100 }} />
-                                    }
-                                </TouchableOpacity>
 
-                                <View style={{ flex: 1, marginLeft: 12 }}>
-                                    <TextInput
-                                        style={{ color: 'black', fontSize: 20 }}
-                                        placeholder='Write a caption...'
-                                        placeholderTextColor='gray'
-                                        multiline={true}
-                                        onChangeText={handleChange('caption')}
-                                        onBlur={handleBlur('caption')}
-                                        value={values.caption}
-                                    />
-                                </View>
-                            </View>
-                            <Divider width={0.2} orientation='vertical' />
-                            {/* <TextInput
+                <View style={{
+                    margin: 20,
+                    justifyContent: 'space-between',
+                    flexDirection: 'row'
+                }}>
+                    <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
+                        {/* {!thumbnailUrl[0].endsWith('.png' || '.jpg') && */}
+                        <Image
+                            source={{ uri: thumbnailUrl ? thumbnailUrl : PLACEHOLDER_IMG }}
+                            style={{ width: 100, height: 100 }}
+                        />
+
+                    </TouchableOpacity>
+
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                        <TextInput
+                            style={{ color: 'black', fontSize: 20 }}
+                            placeholder='Write a caption...'
+                            placeholderTextColor='gray'
+                            multiline={true}
+                            onChangeText={(text) => setCaption(text)}
+                            //onBlur={handleBlur('caption')}
+                            value={caption}
+                        />
+                    </View>
+                </View>
+                <Divider width={0.2} orientation='vertical' />
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                    <TextInput
+                        placeholder="Enter address"
+                        value={address}
+                        onChangeText={(text) => setAddress(text)}
+                        onFocus={() => setShowMap(true)}
+                        onBlur={() => setShowMap(false)}
+                        onSubmitEditing={(event) => handleGeocode(event.nativeEvent.text)}
+                    />
+                    {true && (
+                        <View style={styles.mapContainer}>
+                            <Mapbox.MapView
+                                style={styles.map}
+                            />
+                        </View>
+
+                    )}
+                </View>
+                {/* <TextInput
                                 onChange={(e) => setThumbnailUrl(e.nativeEvent.text)}
                                 style={{ color: 'black', fontSize: 18 }}
                                 placeholder='Enter image url...'
@@ -214,18 +319,15 @@ const FormikPostUploader = () => {
 
 
 
-                            {errors.imageUrl && (
-                                <Text style={{ fontSize: 10, color: 'red' }}>
-                                    {errors.imageUrl}
-                                </Text>
-                            )}
+                {/* {errors.imageUrl && (
+                    <Text style={{ fontSize: 10, color: 'red' }}>
+                        {errors.imageUrl}
+                    </Text>
+                )} */}
 
-                            <Button onPress={handleSubmit} title='Share' disabled={!isValid} />
+                {/* <Button onPress={handleSubmit} title='Share' disabled={!isValid} /> */}
 
-                        </>
-                    )}
 
-                </Formik>
             </Animated.View>
         </View>
     )
@@ -293,5 +395,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
     },
+    mapContainer: {
+        height: 300,
+        width: 300
+    },
+    map: {
+        flex: 1
+    }
 });
 export default FormikPostUploader
